@@ -59,14 +59,13 @@ def convolutional_model(input_shape, batch_size,num_frames = 160):
         x_ = conv_res_block(x_, 512, stage=4)
         return x_
 
-    inputs = Input(shape=input_shape)  # TODO the network should be definable without explicit batch shape
-    x = cnn_component(inputs)  # .shape = (BATCH_SIZE , num_frames/16, 64/16, 512)
+    inputs = Input(shape=input_shape) 
+    x = cnn_component(inputs)  
     x = Lambda(lambda y: K.reshape(y, (-1, math.ceil(num_frames/16), 2048)), name='reshape')(x)
-    x = Lambda(lambda y: K.mean(y, axis=1), name='average')(x)  #shape = (BATCH_SIZE, 512)
-    x = Dense(512, name='affine')(x)  # .shape = (BATCH_SIZE , 512)
+    x = Lambda(lambda y: K.mean(y, axis=1), name='average')(x)  
+    x = Dense(512, name='affine')(x)  
     x = Lambda(lambda y: K.l2_normalize(y, axis=1), name='ln')(x)
 
     model = Model(inputs, x, name='convolutional')
 
-#     print(model.summary())
     return model

@@ -21,8 +21,8 @@ st.write("## Analysis Result")
 st.write("### DeepSpeaker")
 data_deep = {
     "Dataset": ["train-clean-100-samples", "train-clean-100"],
-    "Equal Error Rate": [0.0, 0.0],  # Replace with your actual data
-    "Accuracy": [0.998, 0.998]          # Replace with your actual data
+    "Equal Error Rate": [0.0, 0.0],  
+    "Accuracy": [0.998, 0.998]          
 }
 
 # Create a DataFrame
@@ -33,8 +33,8 @@ st.table(df_deep)
 st.write("### GMM")
 data_gmm = {
     "Dataset": ["train-clean-100-samples", "train-clean-100"],
-    "Equal Error Rate": [0.27, 0.3373],  # Replace with your actual data
-    "Accuracy": [1, 0.831]          # Replace with your actual data
+    "Equal Error Rate": [0.27, 0.3373],  
+    "Accuracy": [1, 0.831]          
 }
 
 # Create a DataFrame

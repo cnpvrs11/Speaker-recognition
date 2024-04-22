@@ -38,14 +38,10 @@ def trim(mfcc,max_length=160):
     return np.expand_dims(s,axis=-1)
 
 def batch_cosine_similarity(x1, x2):
-    # https://en.wikipedia.org/wiki/Cosine_similarity
     # 1 = equal direction ; -1 = opposite direction
     mul = np.multiply(x1, x2)
     s = np.sum(mul, axis=1)
-
-    # l1 = np.sum(np.multiply(x1, x1),axis=1)
-    # l2 = np.sum(np.multiply(x2, x2), axis=1)
-    # as values have have length 1, we don't need to divide by norm (as it is 1)
+    
     return s
 
 DEFAULT_SAMPLE_RATE = 16000
@@ -73,32 +69,60 @@ from pyAudioAnalysis import ShortTermFeatures as aF
 from pyAudioAnalysis import audioBasicIO as aIO
 import soundfile as sf
 
+import scipy.signal as sps
+
 def download_sample(signal, sr, new_sr):
-    # resample data
+    # Resample data
     number_of_samples = round(len(signal) * float(new_sr) / sr)
-    signal = sps.resample(signal, number_of_samples)
+    signal_resampled = sps.resample(signal, number_of_samples)
+    return signal_resampled
 
-    return signal
-
-def zero_crossing_rate(clip, splits):
-    # read machine sound
+def zero_crossing_rate(clip, splits, target_sr):
+    # Read machine sound
     s, fs = sf.read(clip)
-    # resample data
-    if fs != DEFAULT_SAMPLE_RATE:
-        print(f'Resampling clip: {clip} with rate: {fs}')
-        s = download_sample(s, fs, DEFAULT_SAMPLE_RATE)
-    duration = len(s) / float(DEFAULT_SAMPLE_RATE)
+    
+    # Resample data if necessary
+    if fs != target_sr:
+        print(f'Resampling clip: {clip} with rate: {fs} to target rate: {target_sr}')
+        s = download_sample(s, fs, target_sr)
+    
+    duration = len(s) / float(target_sr)
     window = duration / splits
-    # extract features and plot Zero-Crossing Rate and Energy, get only one channel
-    [f, fn] = aF.feature_extraction(s, DEFAULT_SAMPLE_RATE, int(
-        DEFAULT_SAMPLE_RATE * window), int(DEFAULT_SAMPLE_RATE * window))
-    return f[0]
+    
+    # Calculate samples per split
+    samples_per_split = int(target_sr * window)
+    
+    # Initialize array to store ZCR for each split
+    zcr_per_split = []
+    
+    # Calculate ZCR for each split
+    for i in range(splits):
+        # Get the start and end indices for the current split
+        start_idx = i * samples_per_split
+        end_idx = start_idx + samples_per_split
+        
+        # Extract the signal for the current split
+        split_signal = s[start_idx:end_idx]
+        
+        # Calculate ZCR for the current split
+        zcr = calculate_zcr(split_signal)
+        
+        # Store the ZCR value
+        zcr_per_split.append(zcr)
+    
+    return zcr_per_split
+
+def calculate_zcr(signal):
+    # Calculate the number of zero crossings
+    zcr = np.mean(np.abs(np.diff(np.sign(signal))) > 0)
+    return zcr
+
 
 def feature(path, n_mfcc = 13):
     sound_feature = []
     mfcc_feature,delta_feature = extract_mfcc(path,n_mfcc)
     lpc = extract_lpc(path,n_mfcc)
-    zcr = zero_crossing_rate(path,n_mfcc)
+    zcr = zero_crossing_rate(path,n_mfcc,16000)
 
     sound_feature.append(np.hstack([mfcc_feature,delta_feature,lpc,zcr]))
     

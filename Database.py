@@ -23,7 +23,8 @@ def initialize_db(mydb=mydb):
                      email varchar(50) not null,
                      age int not null,
                      gender varchar(20) not null,
-                     password varchar(255) not null
+                     password varchar(255) not null,
+                     method varchar(20) not null
                  )
                  """)
     
@@ -78,37 +79,19 @@ UPLOAD_DIR = "Sound"
 if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
     
-# @app.post("/add_user/")
-# def create_user(name: str = Body(...),email: str=Body(...), age: int=Body(...),gender: str=Body(...),password:str=Body(...),sound_path:str=Body(...)):
-#     conn = mydb
-#     cursor = conn.cursor()
-#     user_insert_query = """INSERT INTO users (name, email,age,gender,password,sound_path) VALUES (%s, %s, %s, %s, %s, %s)"""
-#     cursor.execute(user_insert_query, (name, email,age,gender,password,sound_path))
-#     conn.commit()
-#     cursor.close()
-
-#     # try:
-#     #     with open(in_file.filename, "wb") as f:
-#     #         f.write(in_file.file.read())
-#     #     return {"filename": in_file.filename, "status": "Sound file uploaded successfully"}
-#     # except Exception as e:
-#     #     return JSONResponse(content={"error": str(e)}, status_code=500)
-    
-#     return {"message": "User created successfully."}
-
 from typing import List
 from fastapi import FastAPI, Body
 
 app = FastAPI()
 
 @app.post("/add_user/")
-def create_user(name: str = Body(...), email: str = Body(...), age: int = Body(...), gender: str = Body(...), password: str = Body(...), sound_paths: List[str] = Body(...)):
+def create_user(name: str = Body(...), email: str = Body(...), age: int = Body(...), gender: str = Body(...), password: str = Body(...), sound_paths: List[str] = Body(...),method: str = Body(...)):
     conn = mydb
     cursor = conn.cursor()
 
     # Insert user information
-    user_insert_query = """INSERT INTO users (name, email, age, gender, password) VALUES (%s, %s, %s, %s, %s)"""
-    cursor.execute(user_insert_query, (name, email, age, gender, password))
+    user_insert_query = """INSERT INTO users (name, email, age, gender, password,method) VALUES (%s, %s, %s, %s, %s,%s)"""
+    cursor.execute(user_insert_query, (name, email, age, gender, password,method))
     user_id = cursor.lastrowid  # Assuming you have an auto-increment ID for users
 
     # Insert sound paths
@@ -137,7 +120,7 @@ def login(email:str=Body(...),password:str=Body(...)):
     db_password = user['password'].encode('utf-8')
 
     if bcrypt.checkpw(password.encode('utf-8'), db_password):
-        return {"message": "Login Succesfull"}
+        return {"message": "Login Succesfull", "user": user}
     else:
         raise HTTPException(status_code=401, detail="Wrong Password")
     
@@ -216,20 +199,4 @@ def list_challenge(category: str):
         "true" : true_path
     }
     return sound_data
-# @app.get("/difSound")
-# def dif_sound(email: str = Body(...)):
-#     conn = mydb
-#     cursor = conn.cursor(dictionary=True)
 
-#     user_search_query = """SELECT * FROM users WHERE email NOT LIKE %s"""
-#     cursor.execute(user_search_query, (email,))
-
-#     user = cursor.fetchone()
-#     cursor.close()
-
-#     if user is None:
-#         raise HTTPException(status_code=404, detail="No user found with the provided email")
-
-#     # Check if 'sound_path' is not None before concatenating
-#     user_sound = user['sound_path'] if user['sound_path'] is not None else ''
-#     return {"sound_path": user_sound}
