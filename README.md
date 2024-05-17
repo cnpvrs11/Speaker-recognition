@@ -3,6 +3,17 @@
 Speaker Recognition Application is a web application designed to identify users logging into the system. It employs a two-factor authentication process: first, users log in with their email and password, and then they upload a voice sample for recognition.  Developed using Streamlit and Python, this application utilizes the **Deep Speaker** model and **Gaussian Mixture Models** for the speaker recognition process.
 ![image](https://github.com/cnpvrs11/Speaker-recognition/assets/85270958/3ce26cbb-ba00-4043-8582-695e10b55f97)
 
+## Training
+1. DeepSpeaker Models using Pretraining Model (1)
+2. Gaussian Mixture Models using 16 gaussian distribution
+
+## Evaluation
+Evaluation using train-clean-100 of librispeech dataset with 80% train and 20% test with following detail:
+
+ *Model name* | *Testing dataset* | *Num speakers* | *ACC* | *EER* |
+ | :--- | :--- | :--- | :--- | :--- |
+DeepSpeaker         | [LibriSpeech](http://www.openslr.org/12/) train-clean-100 | 251 | 0.998 | 0 | 
+Gaussian Mixture Models | [LibriSpeech](http://www.openslr.org/12/) train-clean-100 | 251 | 0.831 | 0.3373 | 
 
 ## Installation
 Please install in the following order
@@ -50,3 +61,6 @@ uvicorn Database:app --reload
 ```
 
 Don't forget to run your XAMPP or other database machine for local database
+
+## References
+https://github.com/philipperemy/deep-speaker
