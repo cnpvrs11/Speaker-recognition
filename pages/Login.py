@@ -153,7 +153,7 @@ def predict_gmm(email,password,voice_file):
         gmm = mixture.GaussianMixture(n_components=2, covariance_type='diag')
         gmm.fit(features)
         
-        os.makedirs('gmm')
+        os.makedirs('gmm', exist_ok=True)
         
         file_path = 'gmm/' + f'gmm_{user_id}.sav'
         pickle.dump(gmm, open(file_path, 'wb'))
