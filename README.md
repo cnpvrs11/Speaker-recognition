@@ -1,6 +1,8 @@
 # Speaker Recognition Application
 
 Speaker Recognition Application is a web application designed to identify users logging into the system. It employs a two-factor authentication process: first, users log in with their email and password, and then they upload a voice sample for recognition.  Developed using Streamlit and Python, this application utilizes the **Deep Speaker** model and **Gaussian Mixture Models** for the speaker recognition process.
+![image](https://github.com/cnpvrs11/Speaker-recognition/assets/85270958/3ce26cbb-ba00-4043-8582-695e10b55f97)
+
 
 ## Installation
 Please install in the following order
